@@ -8,12 +8,14 @@ function ItemFinder(props)
     }, []);
 
     return (
+        <div>
         <Card style={{ width: '18rem', alignContent: '' }}>
         <Card.Body>
           <Card.Title>{props.myProduct.name}</Card.Title>
           <Card.Text>{props.myProduct.price}</Card.Text>
           </Card.Body>
           </Card>
+          </div>
     )
 }
 
