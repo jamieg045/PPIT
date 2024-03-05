@@ -12,6 +12,7 @@ function ItemFinder(props)
         <Card style={{ width: '18rem', alignContent: '' }}>
         <Card.Body>
           <Card.Title>{props.myProduct.food_name}</Card.Title>
+          <Card.Subtitle>{props.myProduct.food_description}</Card.Subtitle>
           <Card.Text>{props.myProduct.food_price}</Card.Text>
           </Card.Body>
           </Card>
