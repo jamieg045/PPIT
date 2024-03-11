@@ -45,12 +45,35 @@
         });
     });
 
+    app.get('/api/users', (req,res) => {
+        connection.query('SELECT * FROM users', (error, results) => {
+            if(error) throw error;
+            res.json(results);
+        });
+    });
+
     app.post('/api/menu', (req, res) => {
         console.log(req.body);
         const {name, price, description, eircode, course} = req.body;
 
         const query = 'INSERT INTO food (food_name, food_price, food_description, location_eircode, food_course) VALUES (?, ?, ?, ?, ?)';
         connection.query(query, [name, price, description, eircode, course], (error, results) => {
+            if(error) {
+                console.log('Error:', error);
+                res.status(500).json({message: 'An error occured while saving data'});
+            } else {
+                console.log('Data saved successfully');
+                res.status(200).json({message: 'Data saved successfully'});
+            }   
+        });
+    });
+
+    app.post('/api/users', (req, res) => {
+        console.log(req.body);
+        const {username, password, role, role_id} = req.body;
+
+        const query = 'insert into users (username, password, role, role_id) VALUES (?, ? ,? ,?);'
+        connection.query(query, [username, password, role, role_id], (error, results) => {
             if(error) {
                 console.log('Error:', error);
                 res.status(500).json({message: 'An error occured while saving data'});
