@@ -17,7 +17,7 @@ function App() {
             <Navbar.Brand href="/">IHPOS</Navbar.Brand>
             <Nav className="me-auto">
               <Nav.Link href="/">Home</Nav.Link>
-              <Nav.Link href="/login">Login</Nav.Link>
+              <Nav.Link href="/login">Register</Nav.Link>
               <Nav.Link href="/add">Add New Food Product</Nav.Link>
             </Nav>
           </Container>

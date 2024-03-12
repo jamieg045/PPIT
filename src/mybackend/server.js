@@ -5,6 +5,7 @@
     const port = 4000;
     const cors = require('cors');
     const bodyParser = require("body-parser");
+    const bcrypt = require('bcrypt');
 
     //Making connection to MySQL
     const connection = mysql.createConnection({
@@ -77,9 +78,17 @@
             if(error) {
                 console.log('Error:', error);
                 res.status(500).json({message: 'An error occured while saving data'});
-            } else {
+            } 
+            else {
                 console.log('Data saved successfully');
                 res.status(200).json({message: 'Data saved successfully'});
+                bcrypt.hash(password, 10, (err, hash) => {
+                    if(err) {
+                        console.log('Error hashing password:', err);
+                    } else{
+                        console.log('Hashed password:',)
+                    }
+                })
             }   
         });
     });
