@@ -16,7 +16,7 @@ import axios from 'axios';
 // );
 
 function Home() {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts, cart, setCart] = useState([]);
 
   useEffect(() => {
     axios.get('http://localhost:4000/api/menu')
@@ -27,6 +27,16 @@ function Home() {
         console.log(error);
       })
   }, []);
+
+  const addToCart = (products) => {
+    setCart([cart, products]);
+  }
+
+  const removeFromCart = (productId) => {
+    const updatedCart = cart.filter(item => item.id !== productId);
+    setCart(updatedCart);
+  }
+
 
 
 

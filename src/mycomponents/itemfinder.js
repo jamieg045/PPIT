@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import Card from 'react-bootstrap/Card';
+import { Link } from "react-router-dom";
 
 function ItemFinder(props)
 {
@@ -15,6 +16,7 @@ function ItemFinder(props)
           <Card.Subtitle>{props.myProduct.food_description}</Card.Subtitle>
           <Card.Text>{props.myProduct.food_price}</Card.Text>
           </Card.Body>
+          <Link to={'/cart/' +props.myProduct.food_name} className='btn btn-primary'>Add to Cart</Link>
           </Card>
           </div>
     )

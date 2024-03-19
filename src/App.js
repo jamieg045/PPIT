@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Routes, Route, BrowserRouter } from 'react-rou
 import Home from './mycomponents/home';
 import Login from './mycomponents/login';
 import AddProduct from './mycomponents/addproduct';
+import Cart from './mycomponents/cart';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path='/' element={<Home></Home>} exact />
           <Route path='/login' element={<Login></Login>} />
           <Route path='/add' element={<AddProduct></AddProduct>} exact />
+          <Route path='/cart/:id' element={<Cart></Cart>}></Route>
         </Routes>
       </div>
     </BrowserRouter>
