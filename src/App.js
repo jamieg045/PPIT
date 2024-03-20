@@ -8,6 +8,7 @@ import Home from './mycomponents/home';
 import Login from './mycomponents/login';
 import AddProduct from './mycomponents/addproduct';
 import Cart from './mycomponents/cart';
+import Log from './mycomponents/log';
 
 function App() {
   return (
@@ -17,17 +18,18 @@ function App() {
           <Container>
             <Navbar.Brand href="/">IHPOS</Navbar.Brand>
             <Nav className="me-auto">
-              <Nav.Link href="/">Home</Nav.Link>
-              <Nav.Link href="/login">Register</Nav.Link>
+              <Nav.Link href="/menu">Home</Nav.Link>
+              <Nav.Link href="/login">Login</Nav.Link>
               <Nav.Link href="/add">Add New Food Product</Nav.Link>
             </Nav>
           </Container>
         </Navbar>
         <Routes>
-          <Route path='/' element={<Home></Home>} exact />
+          <Route path='/' element={<Log></Log>} exact />
           <Route path='/login' element={<Login></Login>} />
           <Route path='/add' element={<AddProduct></AddProduct>} exact />
           <Route path='/cart/:id' element={<Cart></Cart>}></Route>
+          <Route path='/menu' element={<Home></Home>}></Route>
         </Routes>
       </div>
     </BrowserRouter>

@@ -6,7 +6,7 @@ function Products(props)
 
     return props.myProducts.map(
         (product) => {
-            return <ItemFinder myProduct={product}></ItemFinder>
+            return <ItemFinder key={product.food_id} myProduct={product} addToCart={props.addToCart}></ItemFinder>
         }
     )
 }

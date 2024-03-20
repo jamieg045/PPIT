@@ -1,12 +1,16 @@
 import {useEffect, useState} from "react";
 import Card from 'react-bootstrap/Card';
-import { Link } from "react-router-dom";
 
 function ItemFinder(props)
 {
     useEffect(() => {
         console.log("Item"+ props.myproduct);
     }, []);
+
+    const handleAddToCart = () => {
+        props.addToCart(props.myProduct.food_id);
+        alert('Item added to cart');
+    }
 
     return (
         <div>
@@ -16,7 +20,7 @@ function ItemFinder(props)
           <Card.Subtitle>{props.myProduct.food_description}</Card.Subtitle>
           <Card.Text>{props.myProduct.food_price}</Card.Text>
           </Card.Body>
-          <Link to={'/cart/' +props.myProduct.food_name} className='btn btn-primary'>Add to Cart</Link>
+          <button onClick={handleAddToCart} className="btn btn-primary">Add to Cart</button>
           </Card>
           </div>
     )

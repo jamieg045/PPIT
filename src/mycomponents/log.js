@@ -2,38 +2,38 @@ import { useState } from "react";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
-function Login()
+function Log()
 {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRole] = useState('');
-    const [role_id, setRoleId] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        console.log( "Username:"+ username+"Role"+ role+"Role ID"+ role_id);
-
-        const users =
+        const userData =
         {
             username:username,
             password:password,
-            role: role,
-            role_id: role_id
         }
 
-        axios.post('http://localhost:4000/api/users', users)
+        axios.post('http://localhost:4000/api/login', userData)
         .then((res) => {
-        console.log(res.data);
-        navigate('/menu');
+            if(res.data.success) {
+                navigate('/menu');
+            } else{
+                setError(res.data.message);
+            }
     })
         .catch((err) => console.log(err.data));
+        setError('An error occured while logging in. Please try again.');
     }
 
     return (
         <div className="mainContainer">
-            <h1>Registration</h1>
+            <h1>Login</h1>
+            {error && <div className="errorLabel">{error}</div>}
             <form onSubmit={handleSubmit}>
                 <div className={'inputContainer'}>
                     <label>Username: </label>
@@ -51,24 +51,8 @@ function Login()
                     onChange={(e) => {setPassword(e.target.value)}}
                     />
                 </div>
-                <div className={'inputContainer'}>
-                    <label>User Role: </label>
-                    <input type="text"
-                    className="form-control"
-                    value={role}
-                    onChange={(e) => {setRole(e.target.value)}}
-                    />
-                </div>
-                <div className={'inputContainer'}>
-                    <label>User Role ID: </label>
-                    <input type="text"
-                    className="form-control"
-                    value={role_id}
-                    onChange={(e) => {setRoleId(e.target.value)}}
-                    />
-                </div>
                 <div className="inputContainer">
-                <input className={'inputButton'} type="submit" value="Add User"></input>
+                <input className={'inputButton'} type="submit" value="Log in"></input>
                 </div>
             </form>
 
@@ -76,4 +60,4 @@ function Login()
     )
 }
 
-export default Login;
+export default Log;

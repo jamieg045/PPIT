@@ -67,3 +67,9 @@
   border-radius: 8px;
   cursor: pointer;
 }
+
+.cart-modal {
+  --height: 80%;
+  --border-radius: 20px;
+  padding: 25px;
+}
