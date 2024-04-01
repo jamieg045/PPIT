@@ -26,7 +26,7 @@ function Log()
                 setError(res.data.message);
             }
     })
-        .catch((err) => console.log(err.data));
+        .catch((err) => console.error(err.data));
         setError('An error occured while logging in. Please try again.');
     }
 

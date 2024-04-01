@@ -91,8 +91,15 @@ app.post('/api/users', (req, res) => {
             return res.status(409).json({ error: 'Username is already taken' });
         }
         else {
+            bcrypt.hash(password, 10, (err, hash) => {
+                if (err) {
+                    console.log('Error hashing password:', err);
+                } else {
+                    console.log('Hashed password:',)
+                }
+                
             const query = 'insert into users (username, password, role, role_id) VALUES (?, ? ,? ,?);'
-            connection.query(query, [username, password, role, role_id], (error, results) => {
+            connection.query(query, [username, hash, role, role_id], (error, results) => {
                 if (error) {
                     console.log('Error:', error);
                     res.status(500).json({ message: 'An error occured while saving data' });
@@ -100,16 +107,9 @@ app.post('/api/users', (req, res) => {
                 else {
                     console.log('Data saved successfully');
                     res.status(200).json({ message: 'Data saved successfully' });
-                    bcrypt.hash(password, 10, (err, hash) => {
-                        if (err) {
-                            console.log('Error hashing password:', err);
-                        } else {
-                            console.log('Hashed password:',)
-                        }
-                    })
-                }
-            });
-        }
+                    }
+                })
+            })}
     })
 });
 
@@ -129,9 +129,10 @@ app.post('/api/login', (req, res) => {
         }
 
         const user = results[0];
-        const userPassword = user.password.toString('utf-8');
+        //const userPassword = user.password.toString('utf-8');
+        const storedHashedPassword = user.password;
 
-        bcrypt.compare(password, userPassword, (err, result) => {
+        bcrypt.compare(password, storedHashedPassword, (err, result) => {
             if(err) {
                 console.error('Encryption error:', err);
                 return res.status(500).json({success: false, message: 'An error occured while processing your request'});
@@ -139,7 +140,6 @@ app.post('/api/login', (req, res) => {
             }
 
             if(!result) {
-                console.log(userPassword);
                 return res.status(401).json({success:false, message: 'Username or password is incorrect'});
             }
 
