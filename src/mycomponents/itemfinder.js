@@ -1,15 +1,17 @@
 import {useEffect, useState} from "react";
 import Card from 'react-bootstrap/Card';
+//import { useNavigate } from "react-router-dom";
 
 function ItemFinder(props)
 {
+    //const navigate = useNavigate();
     useEffect(() => {
         console.log("Item"+ props.myproduct);
     }, []);
 
     const handleAddToCart = () => {
         props.addToCart(props.myProduct.food_id);
-        alert('Item added to cart');
+        //navigate('/cart')
     }
 
     return (

@@ -1,8 +1,10 @@
 import { useState } from "react";
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 function AddProduct()
 {
+    const navigate = useNavigate();
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
@@ -26,6 +28,8 @@ function AddProduct()
         axios.post('http://localhost:4000/api/menu', product)
         .then((res) => console.log(res.data))
         .catch((err) => console.log(err.data));
+        navigate('/menu')
+        
     }
 
     return (
