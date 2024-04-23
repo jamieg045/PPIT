@@ -10,19 +10,30 @@ import AddProduct from './mycomponents/addproduct';
 import Cart from './mycomponents/cart';
 import Log from './mycomponents/log';
 import Checkout from './mycomponents/checkout';
+import Success from './mycomponents/success';
+import Fail from './mycomponents/fail';
 
 function App() {
+  const isLoggedin = sessionStorage.getItem('user');
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('user');
+    window.location.replace('/');
+  }
+
   return (
     <BrowserRouter>
       <div className="App">
         <Navbar bg="primary" data-bs-theme="dark">
           <Container>
-            <Navbar.Brand href="/">IHPOS</Navbar.Brand>
-            <Nav className="me-auto">
+            <Navbar.Brand>IHPOS</Navbar.Brand>
+            {isLoggedin ? (
+              <Nav className="me-auto">
               <Nav.Link href="/menu">Home</Nav.Link>
-              <Nav.Link href="/login">Login</Nav.Link>
               <Nav.Link href="/add">Add New Food Product</Nav.Link>
+              <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
             </Nav>
+            ) : null}
           </Container>
         </Navbar>
         <Routes>
@@ -32,6 +43,8 @@ function App() {
           <Route path='/cart' element={<Cart></Cart>}></Route>
           <Route path='/menu' element={<Home></Home>}></Route>
           <Route path='/checkout' element={<Checkout></Checkout>}></Route>
+          <Route path ='/success' element={<Success></Success>}></Route>
+          <Route path='/fail' element={<Fail></Fail>}></Route>
         </Routes>
       </div>
     </BrowserRouter>

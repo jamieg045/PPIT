@@ -61,6 +61,7 @@ function Login()
                 </div>
                 <div className={'inputContainer'}>
                     <label>User Role ID: </label>
+                    <label>(2:Customer, 3:Employee, 4:Supervisor, 5:Manager, 6:Admin)</label>
                     <input type="text"
                     className="form-control"
                     value={role_id}

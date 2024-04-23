@@ -21,14 +21,28 @@ function Log()
         axios.post('http://localhost:4000/api/login', userData)
         .then((res) => {
             if(res.data.success) {
+                sessionStorage.setItem('user', res.data.username);
                 navigate('/menu');
             } else{
                 setError(res.data.message);
             }
     })
-        .catch((err) => console.error(err.data));
-        setError('An error occured while logging in. Please try again.');
+    .catch((err) => {
+        if (err.response) {
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
+            setError(err.response.data.message || "An unknown error occurred.");
+        } else if (err.request) {
+            // The request was made but no response was received
+            setError("No response from server. Please check your network connection.");
+        } else {
+            // Something happened in setting up the request that triggered an Error
+            setError("Error setting up login request: " + err.message);
+        }
+    });
     }
+
+    
 
     return (
         <div className="mainContainer">

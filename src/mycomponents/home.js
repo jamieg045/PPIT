@@ -21,6 +21,10 @@ function Home() {
       })
   }, []);
 
+  useEffect(() => {
+    sessionStorage.setItem('cart', JSON.stringify(cart));
+  }, [cart]);
+
   // Function to add product to cart
   const addToCart = (productId) => {
     const existingItemIndex = cart.findIndex(item => item.food_id === productId);
@@ -65,10 +69,11 @@ const decreaseQuantity = (productId) => {
 
   return (
     <div>
+      <div className='home-container'>
       <h2>Food Menu</h2>
       <Products myProducts={products} addToCart={addToCart}></Products>
-      <h2>Cart</h2>
             <Cart cart={cart} removeFromCart={removeFromCart} increaseQuantity={increaseQuantity} decreaseQuantity={decreaseQuantity} />
+    </div>
     </div>
   )
 }

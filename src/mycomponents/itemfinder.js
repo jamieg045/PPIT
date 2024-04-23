@@ -15,14 +15,14 @@ function ItemFinder(props)
     }
 
     return (
-        <div>
-        <Card style={{ width: '18rem', alignContent: '' }}>
+        <div className="products">
+        <Card className="product">
         <Card.Body>
           <Card.Title>{props.myProduct.food_name}</Card.Title>
-          <Card.Subtitle>{props.myProduct.food_description}</Card.Subtitle>
-          <Card.Text>{props.myProduct.food_price}</Card.Text>
+          <Card.Subtitle className="details">{props.myProduct.food_description}</Card.Subtitle>
+          <Card.Text className="price">€{props.myProduct.food_price}</Card.Text>
           </Card.Body>
-          <button onClick={handleAddToCart} className="btn btn-primary">Add to Cart</button>
+          <button onClick={handleAddToCart} className="button">Add to Cart</button>
           </Card>
           </div>
     )
