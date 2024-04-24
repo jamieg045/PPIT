@@ -7,7 +7,7 @@ import Products from './products';
 
 function Cart({ cart = [], removeFromCart, increaseQuantity, decreaseQuantity }) {
     // Calculate total price of the cart
-    const totalPrice = cart.reduce((total, item) => total + (item.food_price * item.quantity), 0);
+    const totalPrice = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     const handleCheckout = async () =>{
         const stripe = await loadStripe("pk_test_51P3McW09IVIuY12XuwY2OjzI7EBnj5CuUxyfU2EL1cwXLUOsok2SbmjGCrOZUHaccj18JKsPmRaBgaRZnqV6jGCf00RRGNTWX7")
         console.log('Cart before sending to backend:', cart);
@@ -39,13 +39,13 @@ function Cart({ cart = [], removeFromCart, increaseQuantity, decreaseQuantity })
             {cart.length > 0 ? (
                 <div>
                     {cart.map(item => (
-                        <div key={item.food_id}>
-                            <p>{item.food_name}</p>
+                        <div key={item.product_id}>
+                            <p>{item.name}</p>
                             <p>Quantity: {item.quantity}</p>
-                            <p>Price: €{item.food_price * item.quantity}</p>
-                            <button onClick={() => increaseQuantity(item.food_id)}>+</button>
-                            <button onClick={() => decreaseQuantity(item.food_id)}>-</button>
-                            <button onClick={() => removeFromCart(item.food_id)}>Remove</button>
+                            <p>Price: €{item.price * item.quantity}</p>
+                            <button onClick={() => increaseQuantity(item.product_id)}>+</button>
+                            <button onClick={() => decreaseQuantity(item.product_id)}>-</button>
+                            <button onClick={() => removeFromCart(item.product_id)}>Remove</button>
                         </div>
                     ))}
                     <p>Total Price: €{totalPrice.toFixed(2)}</p>

@@ -1,20 +1,19 @@
 import React from 'react';
-import Products from './products';
+import Products, { BeverageProducts } from './products';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Cart from './cart';
 import { useNavigate } from 'react-router-dom';
-import ItemFinder from './itemfinder';
 
-function Home() {
-  const [products, setProducts] = useState([]);
+function Beverage() {
+  const [beverages, setBeverages] = useState([]);
   const [cart, setCart] = useState(JSON.parse(sessionStorage.getItem('cart')) || []);
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get('http://localhost:4000/api/menu')
+    axios.get('http://localhost:4000/api/drinks')
       .then((response) => {
-        setProducts(response.data);
+        setBeverages(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -33,7 +32,7 @@ function Home() {
         updatedCart[existingItemIndex].quantity++;
         setCart(updatedCart);
     } else {
-      const productToAdd = products.find(product => product.product_id === productId);
+      const productToAdd = beverages.find(product => product.product_id === productId);
       if (productToAdd) {
           setCart([...cart, { ...productToAdd, quantity: 1 }]);
       }
@@ -70,12 +69,12 @@ const decreaseQuantity = (productId) => {
   return (
     <div>
       <div className='home-container'>
-      <h2>Food Menu</h2>
-      <Products myProducts={products} addToCart={addToCart}></Products>
+      <h2>Drinks Menu</h2>
+      <BeverageProducts myBeverages={beverages} addToCart={addToCart}></BeverageProducts>
             <Cart cart={cart} removeFromCart={removeFromCart} increaseQuantity={increaseQuantity} decreaseQuantity={decreaseQuantity} />
     </div>
     </div>
   )
 }
 
-export default Home;
+export default Beverage;

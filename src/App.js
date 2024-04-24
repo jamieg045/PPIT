@@ -11,6 +11,8 @@ import Cart from './mycomponents/cart';
 import Log from './mycomponents/log';
 import Success from './mycomponents/success';
 import Fail from './mycomponents/fail';
+import Beverage from './mycomponents/beverage';
+import AddBeverage from './mycomponents/addbeverage';
 
 function App() {
   const isLoggedin = sessionStorage.getItem('user');
@@ -28,8 +30,10 @@ function App() {
             <Navbar.Brand>IHPOS</Navbar.Brand>
             {isLoggedin ? (
               <Nav className="me-auto">
-              <Nav.Link href="/menu">Home</Nav.Link>
+              <Nav.Link href="/menu">Food</Nav.Link>
+              <Nav.Link href="/drinks">Drinks</Nav.Link>
               <Nav.Link href="/add">Add New Food Product</Nav.Link>
+              <Nav.Link href="/addbeverage">Add New Beverage</Nav.Link>
               <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
             </Nav>
             ) : null}
@@ -39,10 +43,12 @@ function App() {
           <Route path='/' element={<Log></Log>} exact />
           <Route path='/login' element={<Login></Login>} />
           <Route path='/add' element={<AddProduct></AddProduct>} exact />
+          <Route path='/addbeverage' element={<AddBeverage></AddBeverage>}></Route>
           <Route path='/cart' element={<Cart></Cart>}></Route>
           <Route path='/menu' element={<Home></Home>}></Route>
           <Route path ='/success' element={<Success></Success>}></Route>
           <Route path='/fail' element={<Fail></Fail>}></Route>
+          <Route path='/drinks' element={<Beverage></Beverage>}></Route>
         </Routes>
       </div>
     </BrowserRouter>

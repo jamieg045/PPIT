@@ -10,7 +10,7 @@ function ItemFinder(props)
     }, []);
 
     const handleAddToCart = () => {
-        props.addToCart(props.myProduct.food_id);
+        props.addToCart(props.myProduct.product_id);
         //navigate('/cart')
     }
 
@@ -18,9 +18,34 @@ function ItemFinder(props)
         <div className="products">
         <Card className="product">
         <Card.Body>
-          <Card.Title>{props.myProduct.food_name}</Card.Title>
-          <Card.Subtitle className="details">{props.myProduct.food_description}</Card.Subtitle>
-          <Card.Text className="price">€{props.myProduct.food_price}</Card.Text>
+          <Card.Title>{props.myProduct.name}</Card.Title>
+          <Card.Subtitle className="details">{props.myProduct.description}</Card.Subtitle>
+          <Card.Text className="price">€{props.myProduct.price}</Card.Text>
+          </Card.Body>
+          <button onClick={handleAddToCart} className="button">Add to Cart</button>
+          </Card>
+          </div>
+    )
+}
+
+export function BeverageFinder(props)
+{
+       useEffect(() => {
+        console.log("Item"+ props.mybeverage);
+    }, []);
+
+    const handleAddToCart = () => {
+        props.addToCart(props.myBeverage.product_id);
+        //navigate('/cart')
+    }
+
+    return (
+        <div className="products">
+        <Card className="product">
+        <Card.Body>
+          <Card.Title>{props.myBeverage.name}</Card.Title>
+          <Card.Subtitle className="details">{props.myBeverage.description}</Card.Subtitle>
+          <Card.Text className="price">€{props.myBeverage.price}</Card.Text>
           </Card.Body>
           <button onClick={handleAddToCart} className="button">Add to Cart</button>
           </Card>

@@ -41,7 +41,14 @@
     });
 
     app.get('/api/menu', (req, res) => {
-        connection.query('select * from food order by food_id;', (error, results) => {
+        connection.query('select * from food order by product_id;', (error, results) => {
+            if (error) throw error;
+            res.json(results);
+        });
+    });
+
+    app.get('/api/drinks', (req, res) => {
+        connection.query('select * from drinks order by product_id;', (error, results) => {
             if (error) throw error;
             res.json(results);
         });
@@ -63,10 +70,26 @@
 
     app.post('/api/menu', (req, res) => {
         console.log(req.body);
-        const { name, price, description, eircode, course } = req.body;
+        const { name, price, description, eircode, category } = req.body;
 
-        const query = 'INSERT INTO food (food_name, food_price, food_description, location_eircode, food_course) VALUES (?, ?, ?, ?, ?)';
-        connection.query(query, [name, price, description, eircode, course], (error, results) => {
+        const query = 'INSERT INTO food (name, price, description, eircode, category) VALUES (?, ?, ?, ?, ?)';
+        connection.query(query, [name, price, description, eircode, category], (error, results) => {
+            if (error) {
+                console.log('Error:', error);
+                res.status(500).json({ message: 'An error occured while saving data' });
+            } else {
+                console.log('Data saved successfully');
+                res.status(200).json({ message: 'Data saved successfully' });
+            }
+        });
+    });
+
+    app.post('/api/drinks', (req, res) => {
+        console.log(req.body);
+        const { name, price, description, eircode, category } = req.body;
+
+        const query = 'INSERT INTO drinks (name, price, description, eircode, category) VALUES (?, ?, ?, ?, ?)';
+        connection.query(query, [name, price, description, eircode, category], (error, results) => {
             if (error) {
                 console.log('Error:', error);
                 res.status(500).json({ message: 'An error occured while saving data' });
@@ -156,14 +179,14 @@
     
         const lineItems = products.map((product) => {
             console.log('Processing product:', product);
-            console.log('Product price:', product.food_price);
-            const unitAmount = Math.round(product.food_price * 100);
+            console.log('Product price:', product.price);
+            const unitAmount = Math.round(product.price * 100);
     
             return {
                 price_data: {
                     currency: "eur",
                     product_data: {
-                        name: product.food_name,
+                        name: product.name,
                     },
                     unit_amount: unitAmount ,
                 },

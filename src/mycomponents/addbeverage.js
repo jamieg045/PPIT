@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
-function AddProduct()
+function AddBeverage()
 {
     const navigate = useNavigate();
     const [name, setName] = useState('');
@@ -14,7 +14,7 @@ function AddProduct()
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        console.log("Name: "+ name+ "Price:"+ price+ "Description"+ description+"Eircode"+ eircode+"Course"+ category);
+        console.log("Name: "+ name+ "Price:"+ price+ "Description"+ description+"Eircode"+ eircode+"Category"+ category);
 
         const product =
         {
@@ -25,16 +25,16 @@ function AddProduct()
             category:category
         }
 
-        axios.post('http://localhost:4000/api/menu', product)
+        axios.post('http://localhost:4000/api/drinks', product)
         .then((res) => console.log(res.data))
         .catch((err) => console.log(err.data));
-        navigate('/menu')
+        navigate('/drinks')
         
     }
 
     return (
         <div>
-            <h1>Insert Food Product</h1>
+            <h1>Insert Beverage Product</h1>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>Product Name: </label>
@@ -69,7 +69,7 @@ function AddProduct()
                     />
                 </div>
                 <div className="form-group">
-                    <label>Product Course: </label>
+                    <label>Product Category: </label>
                     <input type="text"
                     className="form-control"
                     value={category}
@@ -83,4 +83,4 @@ function AddProduct()
     )
 }
 
-export default AddProduct;
+export default AddBeverage;
