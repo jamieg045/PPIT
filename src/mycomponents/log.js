@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 function Log()
 {
@@ -8,6 +9,14 @@ function Log()
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const isLoggedin = sessionStorage.getItem('user');
+        if (isLoggedin)
+        {
+            navigate('/menu');
+        }
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -30,7 +39,6 @@ function Log()
     .catch((err) => {
         if (err.response) {
             // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
             setError(err.response.data.message || "An unknown error occurred.");
         } else if (err.request) {
             // The request was made but no response was received
@@ -40,7 +48,9 @@ function Log()
             setError("Error setting up login request: " + err.message);
         }
     });
-    }
+}
+
+    
 
     
 

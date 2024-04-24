@@ -9,7 +9,6 @@ import Login from './mycomponents/login';
 import AddProduct from './mycomponents/addproduct';
 import Cart from './mycomponents/cart';
 import Log from './mycomponents/log';
-import Checkout from './mycomponents/checkout';
 import Success from './mycomponents/success';
 import Fail from './mycomponents/fail';
 
@@ -42,7 +41,6 @@ function App() {
           <Route path='/add' element={<AddProduct></AddProduct>} exact />
           <Route path='/cart' element={<Cart></Cart>}></Route>
           <Route path='/menu' element={<Home></Home>}></Route>
-          <Route path='/checkout' element={<Checkout></Checkout>}></Route>
           <Route path ='/success' element={<Success></Success>}></Route>
           <Route path='/fail' element={<Fail></Fail>}></Route>
         </Routes>
