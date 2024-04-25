@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { IonInfiniteScroll } from "@ionic/react";
 
 function Log()
 {
@@ -11,10 +12,15 @@ function Log()
     const navigate = useNavigate();
 
     useEffect(() => {
-        const isLoggedin = sessionStorage.getItem('user');
-        if (isLoggedin)
+        const isLoggedin = JSON.parse(sessionStorage.getItem('user'));
+        if (isLoggedin && isLoggedin.username)
         {
+            console.log("User is logged in:", isLoggedin.username);
             navigate('/menu');
+        }
+        else
+        {
+            console.log("User is not logged in");
         }
     }, []);
 
@@ -30,7 +36,11 @@ function Log()
         axios.post('http://localhost:4000/api/login', userData)
         .then((res) => {
             if(res.data.success) {
-                sessionStorage.setItem('user', res.data.username);
+                sessionStorage.setItem('user', JSON.stringify({
+                username: res.data.username,
+                role: res.data.role
+            }));
+                window.location.reload();
                 navigate('/menu');
             } else{
                 setError(res.data.message);
@@ -77,6 +87,9 @@ function Log()
                 </div>
                 <div className="inputContainer">
                 <input className={'inputButton'} type="submit" value="Log in"></input>
+                </div>
+                <div>
+                    <Link to="/register">Not a user? Register here.</Link>
                 </div>
             </form>
 

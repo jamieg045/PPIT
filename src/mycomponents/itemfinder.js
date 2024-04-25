@@ -1,5 +1,6 @@
 import {useEffect, useState} from "react";
 import Card from 'react-bootstrap/Card';
+import { Link } from "react-router-dom";
 //import { useNavigate } from "react-router-dom";
 
 function ItemFinder(props)
@@ -23,6 +24,10 @@ function ItemFinder(props)
           <Card.Text className="price">€{props.myProduct.price}</Card.Text>
           </Card.Body>
           <button onClick={handleAddToCart} className="button">Add to Cart</button>
+          <br></br>
+          {props.role === 'manager' && (
+            <Link to={'/manageproduct/'+props.myProduct.product_id} className='btn btn-primary'>Edit</Link>
+          )}
           </Card>
           </div>
     )
@@ -48,6 +53,8 @@ export function BeverageFinder(props)
           <Card.Text className="price">€{props.myBeverage.price}</Card.Text>
           </Card.Body>
           <button onClick={handleAddToCart} className="button">Add to Cart</button>
+          <br></br>
+            <Link to={'/managebeverage/'+props.myBeverage.product_id} className='btn btn-primary'>Edit</Link>
           </Card>
           </div>
     )

@@ -7,26 +7,24 @@ function Login()
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('');
-    const [role_id, setRoleId] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        console.log( "Username:"+ username+"Role"+ role+"Role ID"+ role_id);
+        console.log( "Username:"+ username+"Role"+ role);
 
         const users =
         {
             username:username,
             password:password,
             role: role,
-            role_id: role_id
         }
 
         axios.post('http://localhost:4000/api/users', users)
         .then((res) => {
         console.log(res.data);
-        navigate('/menu');
+        navigate('/');
     })
         .catch((err) => console.log(err.data));
     }
@@ -53,19 +51,11 @@ function Login()
                 </div>
                 <div className={'inputContainer'}>
                     <label>User Role: </label>
+                    <label>Customer, Employee, Supervisor, Manager, Admin</label>
                     <input type="text"
                     className="form-control"
                     value={role}
                     onChange={(e) => {setRole(e.target.value)}}
-                    />
-                </div>
-                <div className={'inputContainer'}>
-                    <label>User Role ID: </label>
-                    <label>(2:Customer, 3:Employee, 4:Supervisor, 5:Manager, 6:Admin)</label>
-                    <input type="text"
-                    className="form-control"
-                    value={role_id}
-                    onChange={(e) => {setRoleId(e.target.value)}}
                     />
                 </div>
                 <div className="inputContainer">
