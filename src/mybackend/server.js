@@ -90,8 +90,8 @@ app.put('/api/drinks/:product_id', async (req, res) => {
     const product_id = req.params.itemId;
     const data = req.body;
     console.log('Updated: ' + req.params.product_id);
-    connection.query('UPDATE drinks SET name = ?, price = ?, description = ?, eircode = ?, category = ?',
-        [data.name, data.price, data.description, data.eircode, data.category, product_id],
+    connection.query('UPDATE drinks SET name = ?, price = ?, description = ?, eircode = ?, category = ? where product_id = ?',
+        [data.name, data.price, data.description, data.eircode, data.category, data.product_id],
         (error, results) => {
             if (error) {
                 console.log("Error updating menu item:", error);

@@ -21,20 +21,6 @@ function Home() {
       })
   }, []);
 
-  const Reload = (e) => {
-    axios.get('http://localhost:4000/api/menu')
-    .then(
-      (response) => {
-        setProducts(response.data);
-      }
-    )
-    .catch(
-      (error) => {
-        console.log(error);
-      }
-    )
-  }
-
   useEffect(() => {
     sessionStorage.setItem('cart', JSON.stringify(cart));
   }, [cart]);
@@ -85,7 +71,7 @@ const decreaseQuantity = (productId) => {
     <div>
       <div className='home-container'>
       <h2>Food Menu</h2>
-      <Products myProducts={products} addToCart={addToCart} ReloadData={Reload}></Products>
+      <Products myProducts={products} addToCart={addToCart}></Products>
             <Cart cart={cart} removeFromCart={removeFromCart} increaseQuantity={increaseQuantity} decreaseQuantity={decreaseQuantity} />
     </div>
     </div>

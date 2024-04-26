@@ -12,14 +12,13 @@ import Log from './mycomponents/log';
 import Fail from './mycomponents/fail';
 import Beverage from './mycomponents/beverage';
 import AddBeverage from './mycomponents/addbeverage';
-import EditHome from './mycomponents/edithome';
-import EditBeverage from './mycomponents/editbeverage';
 
 function App() {
   const user = JSON.parse(sessionStorage.getItem('user'));
 
   const handleLogout = () => {
     sessionStorage.removeItem('user');
+    sessionStorage.removeItem('cart');
     window.location.replace('/');
   }
 
@@ -53,8 +52,6 @@ function App() {
           <Route path='/menu' element={<Home></Home>}></Route>
           <Route path='/fail' element={<Fail></Fail>}></Route>
           <Route path='/drinks' element={<Beverage></Beverage>}></Route>
-          <Route path='/manageproduct/:product_id' element={<EditHome></EditHome>}></Route>
-          <Route path='/managebeverage/:product_id' element={<EditBeverage></EditBeverage>}></Route>
         </Routes>
       </div>
     </BrowserRouter>
