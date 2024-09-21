@@ -16,7 +16,7 @@ function Log()
         if (isLoggedin && isLoggedin.username)
         {
             console.log("User is logged in:", isLoggedin.username);
-            navigate('/menu');
+            navigate('/map');
         }
         else
         {
@@ -33,7 +33,7 @@ function Log()
             password:password,
         }
 
-        axios.post('http://localhost:4000/api/login', userData)
+        axios.post('http://192.168.1.1:4000/api/login', userData)
         .then((res) => {
             if(res.data.success) {
                 sessionStorage.setItem('user', JSON.stringify({

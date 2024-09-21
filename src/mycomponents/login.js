@@ -21,7 +21,7 @@ function Login()
             role: role,
         }
 
-        axios.post('http://localhost:4000/api/users', users)
+        axios.post('http://192.168.1.1:4000/api/users', users)
         .then((res) => {
         console.log(res.data);
         navigate('/');

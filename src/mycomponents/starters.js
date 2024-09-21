@@ -1,24 +1,22 @@
-import React from 'react';
-import Products, { BeverageProducts } from './products';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import Products from './products';
 import axios from 'axios';
 import Cart from './cart';
-import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
-function Beverage({ setCartCount }) {
-  const [beverages, setBeverages] = useState([]);
+function Starters({ setCartCount }) {
+  const [products, setProducts] = useState([]);
   const [cart, setCart] = useState(JSON.parse(sessionStorage.getItem('cart')) || []);
-  const navigate = useNavigate();
-  const {eircode} = useParams();
+  const { eircode } = useParams();
 
   useEffect(() => {
     if (eircode) {
       console.log(`Fetching menu for eircode: ${eircode}`);
-      axios.get(`http://192.168.1.1:4000/api/drinks/${eircode}`)
+      axios
+        .get(`http://192.168.1.1:4000/api/starter/${eircode}`)
         .then((response) => {
           console.log('API response:', response.data);
-          setBeverages(response.data);
+          setProducts(response.data);
         })
         .catch((error) => {
           console.log(error);
@@ -43,7 +41,7 @@ function Beverage({ setCartCount }) {
       updatedCart[existingItemIndex].quantity++;
       setCart(updatedCart);
     } else {
-      const productToAdd = beverages.find((product) => product.product_id === productId);
+      const productToAdd = products.find((product) => product.product_id === productId);
       if (productToAdd) {
         setCart([...cart, { ...productToAdd, quantity: 1 }]);
       }
@@ -53,12 +51,12 @@ function Beverage({ setCartCount }) {
 
   return (
     <div>
-      <div className='home-container'>
-      <h2>Drinks Menu</h2>
-      <BeverageProducts myBeverages={beverages} addToCart={addToCart}></BeverageProducts>
+      <div className="home-container">
+        <h2>Food Menu</h2>
+        <Products myProducts={products} addToCart={addToCart} />
+      </div>
     </div>
-    </div>
-  )
+  );
 }
 
-export default Beverage;
+export default Starters;

@@ -28,7 +28,7 @@ function AddProduct()
         axios.post('http://localhost:4000/api/menu', product)
         .then((res) => console.log(res.data))
         .catch((err) => console.log(err.data));
-        navigate('/menu')
+        navigate(`/menu/${eircode}`)
         
     }
 

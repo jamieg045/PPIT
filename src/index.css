@@ -11,3 +11,56 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Always 3 equal-width columns */
+  gap: 20px; /* Spacing between items */
+  justify-content: center; /* Center content on larger screens */
+  padding: 20px;
+  max-width: 1200px; /* Limit the total width of the grid */
+  margin: 0 auto; /* Center the container on the page */
+}
+
+.product {
+  border: 1px solid #ccc;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Responsive layout for medium screens */
+@media (max-width: 768px) {
+  .products {
+      grid-template-columns: repeat(2, 1fr); /* Switch to 2 columns on medium screens */
+  }
+}
+
+/* Responsive layout for small screens (mobile) */
+@media (max-width: 480px) {
+  .products {
+      grid-template-columns: 1fr; /* Switch to 1 column on small screens */
+  }
+}
+
+.category-buttons button {
+  padding: 10px 20px;
+  font-size: 16px;
+  margin: 10px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.category-buttons button.active {
+  background-color: #0056b3;
+}
+
+.category-buttons button:hover {
+  background-color: #0056b3;
+}
+
+.category-buttons button:focus {
+  outline: none;
+}

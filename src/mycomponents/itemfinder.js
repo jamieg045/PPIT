@@ -51,4 +51,28 @@ export function BeverageFinder(props)
     )
 }
 
+export function GroceryFinder(props)
+{
+       useEffect(() => {
+        console.log("Item"+ props.mygrocery);
+    }, []);
+
+    const handleAddToCart = () => {
+        props.addToCart(props.myGrocery.product_id);
+    }
+
+    return (
+        <div className="products">
+        <Card className="product">
+        <Card.Body>
+          <Card.Title>{props.myGrocery.name}</Card.Title>
+          <Card.Subtitle className="details">{props.myGrocery.description}</Card.Subtitle>
+          <Card.Text className="price">€{props.myGrocery.price}</Card.Text>
+          </Card.Body>
+          <button onClick={handleAddToCart} className="button">Add to Cart</button>
+          </Card>
+          </div>
+    )
+}
+
 export default ItemFinder;
