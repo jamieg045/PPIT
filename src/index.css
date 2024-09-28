@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
 }
 
 code {
@@ -35,10 +36,22 @@ code {
   }
 }
 
+@media (max-width: 576px) {
+  .products {
+    grid-template-columns: 1fr; /* One column for smaller devices */
+  }
+}
+
 /* Responsive layout for small screens (mobile) */
 @media (max-width: 480px) {
   .products {
       grid-template-columns: 1fr; /* Switch to 1 column on small screens */
+  }
+}
+@media (max-width: 480px) {
+  .category-buttons button {
+    padding: 15px 25px;
+    font-size: 18px; /* Larger text size for better readability on mobile */
   }
 }
 

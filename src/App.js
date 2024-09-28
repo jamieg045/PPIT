@@ -17,7 +17,7 @@ import MapComponent from './mycomponents/mapcomponent';
 import Grocery from './mycomponents/grocery';
 import { LocationContext, LocationProvider } from './mycomponents/locationcontext';
 import { Link } from 'react-router-dom';
-import Starters from './mycomponents/starters';
+import Success from './mycomponents/success';
 
 function App() {
   const user = JSON.parse(sessionStorage.getItem('user'));
@@ -81,7 +81,8 @@ function App() {
             <Route path="/map" element={<MapComponent />} />
             <Route path="/menu/:eircode" element={<Home setCartCount={setCartCount} />} />
             <Route path="/drinks/:eircode" element={<Beverage setCartCount={setCartCount} />} />
-            <Route path="/starter/:eircode" element={<Starters setCartCount={setCartCount} />} />
+            <Route path="/success" element={<Success />} />
+            <Route path="/fail" element={<Fail />} />
           </Routes>
         </div>
       </Router>

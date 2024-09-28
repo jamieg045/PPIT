@@ -13,7 +13,7 @@ function Home({ setCartCount }) {
 
   const fetchCategoryProducts = (category) => {
     if (eircode) {
-      const categoryEndpoint = `http://localhost:4000/api/menu/${category}/${eircode}`;
+      const categoryEndpoint = `http://192.168.1.1:4000/api/menu/${category}/${eircode}`;
       console.log(`Fetching ${category} for eircode: ${eircode}`);
       axios
         .get(categoryEndpoint)

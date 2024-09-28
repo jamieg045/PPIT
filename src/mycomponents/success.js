@@ -7,17 +7,18 @@ function Success() {
   useEffect(() => {
     // Clear the cart in sessionStorage after payment success
     sessionStorage.removeItem('cart');
+    sessionStorage.removeItem('user'); // This will log the user out
 
     // Optionally, redirect the user back to another page
     setTimeout(() => {
-      navigate('/menu');
+      navigate('/');
     }, 3000); // Redirect after 3 seconds
   }, [navigate]);
 
   return (
     <div>
       <h1>Payment Successful!</h1>
-      <p>Thank you for your purchase. Redirecting you back to the menu...</p>
+      <p>Thank you for your purchase. Redirecting you back to the login page...</p>
     </div>
   );
 }

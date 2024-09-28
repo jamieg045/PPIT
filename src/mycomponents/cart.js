@@ -4,19 +4,26 @@ import axios from 'axios';
 
 function Cart() {
   const [cart, setCart] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     // Load cart from sessionStorage when the component mounts
     const storedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+    const storedusername = JSON.parse(sessionStorage.getItem('user')) || { username: 'Unknown' };
+  
+
     setCart(storedCart);
+    setUser(storedusername);
   }, []);
 
   const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
   const handleCheckout = async () => {
     try {
+
+      const eircode = cart.length > 0 ? cart[0].eircode : 'Unknown';
       const stripe = await loadStripe('pk_test_51P3McW09IVIuY12XuwY2OjzI7EBnj5CuUxyfU2EL1cwXLUOsok2SbmjGCrOZUHaccj18JKsPmRaBgaRZnqV6jGCf00RRGNTWX7');
-      const response = await axios.post('http://192.168.1.1:4000/api/create-checkout-session', { products: cart });
+      const response = await axios.post('http://192.168.1.1:4000/api/create-checkout-session', { products: cart, username: user.username, eircode: eircode});
       const session = response.data;
       await stripe.redirectToCheckout({ sessionId: session.id });
       sessionStorage.removeItem('cart');

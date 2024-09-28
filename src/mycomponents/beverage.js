@@ -9,8 +9,25 @@ import { useParams } from 'react-router-dom';
 function Beverage({ setCartCount }) {
   const [beverages, setBeverages] = useState([]);
   const [cart, setCart] = useState(JSON.parse(sessionStorage.getItem('cart')) || []);
-  const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
   const {eircode} = useParams();
+
+  const fetchCategoryBeverages = (category) => {
+    if (eircode) {
+      const categoryEndpoint = `http://192.168.1.1:4000/api/drinks/${category}/${eircode}`;
+      console.log(`Fetching ${category} for eircode: ${eircode}`);
+      axios
+        .get(categoryEndpoint)
+        .then((response) => {
+          console.log('API response:', response.data);
+          setBeverages(response.data);
+          setSelectedCategory(category); // Update selected category
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  };
 
   useEffect(() => {
     if (eircode) {
@@ -50,15 +67,31 @@ function Beverage({ setCartCount }) {
     }
     updateCartCount();
   };
+  const categories = ['Stout', 'Lager', 'Red Ale','Cider', 'IPA', 'Beer Bottle', 'Liquer', 'Split', 'Baby', 'Dashes','Cocktail'];
 
   return (
     <div>
-      <div className='home-container'>
-      <h2>Drinks Menu</h2>
-      <BeverageProducts myBeverages={beverages} addToCart={addToCart}></BeverageProducts>
+      <div className="home-container">
+        <h2>Drinks Menu</h2>
+        <div className="category-buttons">
+          {categories.map((category) => (
+            <button
+              key={category}
+              onClick={() => fetchCategoryBeverages(category.toLowerCase().replace(" ", ""))} // Fetch products for selected category
+              className={category === selectedCategory ? 'active' : ''}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+        {selectedCategory ? (
+        <BeverageProducts myBeverages={beverages} addToCart={addToCart} />
+      ) : (
+        <p>Please select a category to view items.</p>
+      )}
+      </div>
     </div>
-    </div>
-  )
+  );
 }
 
 export default Beverage;
