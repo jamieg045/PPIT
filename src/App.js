@@ -53,8 +53,8 @@ function App() {
                         <Nav.Link as={Link} to={`/drinks/${selectedLocation.Eircode}`}>Drinks</Nav.Link>
                         {user.role === 'manager' && (
                           <>
-                            <Nav.Link as={Link} to="/add">Add New Food Product</Nav.Link>
-                            <Nav.Link as={Link} to="/addbeverage">Add New Beverage</Nav.Link>
+                            <Nav.Link as={Link} to={`/add/${selectedLocation.Eircode}`}>Add New Food Product</Nav.Link>
+                            <Nav.Link as={Link} to={`/addbeverage/${selectedLocation.Eircode}`}>Add New Beverage</Nav.Link>
                           </>
                         )}
                         <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
@@ -74,8 +74,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Log />} exact />
             <Route path="/register" element={<Login />} />
-            <Route path="/add" element={<AddProduct />} exact />
-            <Route path="/addbeverage" element={<AddBeverage />} />
+            <Route path="/add/:eircode" element={<AddProduct setCartCount={setCartCount}/>} exact />
+            <Route path="/addbeverage/:eircode" element={<AddBeverage setCartCount={setCartCount}/>} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/fail" element={<Fail />} />
             <Route path="/map" element={<MapComponent />} />

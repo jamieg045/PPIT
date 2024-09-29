@@ -1,6 +1,6 @@
 import { useState } from "react";
 import axios from 'axios';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function AddProduct()
 {
@@ -8,8 +8,11 @@ function AddProduct()
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [description, setDescription] = useState('');
-    const [eircode, setEircode] = useState('');
+    const {eircode}= useParams();
     const [category, setCategory] = useState('');
+
+    // Example of ENUM values for product categories
+    const categories = ['Starter', 'Main Course', 'Dessert', 'Sides', 'Sandwich', 'Pizza'];
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -65,16 +68,22 @@ function AddProduct()
                     <input type="text"
                     className="form-control"
                     value={eircode}
-                    onChange={(e) => {setEircode(e.target.value)}}
+                    disabled
                     />
                 </div>
                 <div className="form-group">
                     <label>Product Course: </label>
-                    <input type="text"
-                    className="form-control"
-                    value={category}
-                    onChange={(e) => {setCategory(e.target.value)}}
-                    />
+                    <select
+                        className="form-control"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                        required
+                    >
+                        <option value="">Select Category</option>
+                        {categories.map((cat, index) => (
+                            <option key={index} value={cat}>{cat}</option>
+                        ))}
+                    </select>
                 </div>
                 <input type="submit" value="Add Product"></input>
             </form>
