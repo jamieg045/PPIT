@@ -519,7 +519,7 @@ app.post('/api/login', (req, res) => {
                     return res.status(401).json({ success: false, message: 'Username or password is incorrect' });
                 }
 
-                return res.status(200).json({ success: true, message: 'Login successful', username: user.username, role: user.role });
+                return res.status(200).json({ success: true, message: 'Login successful', username: user.username, role: user.role, eircode: user.eircode || null });
             })
         })
 })

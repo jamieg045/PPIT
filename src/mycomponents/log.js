@@ -38,7 +38,8 @@ function Log()
             if(res.data.success) {
                 sessionStorage.setItem('user', JSON.stringify({
                 username: res.data.username,
-                role: res.data.role
+                role: res.data.role,
+                eircode: res.data.eircode
             }));
                 window.location.reload();
                 navigate('/menu');
