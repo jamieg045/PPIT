@@ -9,6 +9,7 @@ function Home({ setCartCount }) {
   const [products, setProducts] = useState([]);
   const [cart, setCart] = useState(JSON.parse(sessionStorage.getItem('cart')) || []);
   const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
+  const [availableCategories, setAvailableCategories] = useState([]);
   const { eircode } = useParams();
 
   const fetchCategoryProducts = (category) => {
@@ -44,6 +45,24 @@ function Home({ setCartCount }) {
   }, [eircode]);
 
   useEffect(() => {
+    if(eircode) {
+      axios.get(`http://192.168.1.1:4000/api/menu/$eircode`)
+      .then((response) => {
+        const fetchedProducts = response.data;
+        setProducts(fetchedProducts);
+
+        const availableCategories = categories.filter(category => {
+          return fetchedProducts.some(product=> product.category === category)
+        });
+        setAvailableCategories(availableCategories);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
+  }, [eircode]);
+
+  useEffect(() => {
     sessionStorage.setItem('cart', JSON.stringify(cart));
     updateCartCount();
   }, [cart]);
@@ -68,14 +87,14 @@ function Home({ setCartCount }) {
     updateCartCount();
   };
 
-  const categories = ['Starter', 'Main Course', 'Dessert', 'Sides'];
+  const categories = ['Starter', 'Main Course', 'Dessert', 'Sides', 'Pizza', 'Sandwich'];
 
   return (
     <div>
       <div className="home-container">
         <h2>Food Menu</h2>
         <div className="category-buttons">
-          {categories.map((category) => (
+          {availableCategories.map((category) => (
             <button
               key={category}
               onClick={() => fetchCategoryProducts(category.toLowerCase().replace(" ", ""))} // Fetch products for selected category

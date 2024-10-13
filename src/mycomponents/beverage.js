@@ -10,6 +10,7 @@ function Beverage({ setCartCount }) {
   const [beverages, setBeverages] = useState([]);
   const [cart, setCart] = useState(JSON.parse(sessionStorage.getItem('cart')) || []);
   const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
+  const [availableCategories, setAvailableCategories] = useState([]);
   const {eircode} = useParams();
 
   const fetchCategoryBeverages = (category) => {
@@ -25,6 +26,7 @@ function Beverage({ setCartCount }) {
         })
         .catch((error) => {
           console.log(error);
+          
         });
     }
   };
@@ -40,6 +42,23 @@ function Beverage({ setCartCount }) {
         .catch((error) => {
           console.log(error);
         });
+    }
+  }, [eircode]);
+
+  useEffect(() => {
+    if(eircode) {
+      axios.get(`http://192.168.1.1:4000/api/drinks/${eircode}`)
+      .then((response) => {
+        const fetchedProducts = response.data;
+        setBeverages(fetchedProducts);
+        const availableCategories = categories.filter(category => {
+          return fetchedProducts.some(product=> product.category === category)
+        });
+        setAvailableCategories(availableCategories);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     }
   }, [eircode]);
 
@@ -74,7 +93,7 @@ function Beverage({ setCartCount }) {
       <div className="home-container">
         <h2>Drinks Menu</h2>
         <div className="category-buttons">
-          {categories.map((category) => (
+          {availableCategories.map((category) => (
             <button
               key={category}
               onClick={() => fetchCategoryBeverages(category.toLowerCase().replace(" ", ""))} // Fetch products for selected category

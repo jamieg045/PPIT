@@ -15,14 +15,19 @@ function Log()
         const isLoggedin = JSON.parse(sessionStorage.getItem('user'));
         if (isLoggedin && isLoggedin.username)
         {
-            console.log("User is logged in:", isLoggedin.username);
-            navigate('/map');
-        }
-        else
-        {
+            const { role, eircode } = isLoggedin;
+
+            if (role === 'customer' || role === 'admin') {
+                console.log("User is logged in:", isLoggedin.username);
+                navigate('/map');
+            } else if (role === 'employee' || role === 'supervisor' || role === 'manager') {
+                console.log("User is logged in:", isLoggedin.username);
+                navigate(`/drinks/${eircode}`);
+            }
+        } else {
             console.log("User is not logged in");
         }
-    }, []);
+    }, [navigate]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -41,12 +46,21 @@ function Log()
                 role: res.data.role,
                 eircode: res.data.eircode
             }));
+
+            // Redirect based on role
+            const { role, eircode } = res.data;
+            if (role === 'customer' || role === 'admin') {
                 window.location.reload();
-                navigate('/menu');
-            } else{
-                setError(res.data.message);
+                navigate('/map');
+            } else if (role === 'employee' || role === 'supervisor' || role === 'manager') {
+                window.location.reload();
+                navigate(`/menu/${eircode}`);
             }
+        } else {
+            setError(res.data.message);
+        }
     })
+
     .catch((err) => {
         if (err.response) {
             // The request was made and the server responded with a status code
@@ -68,7 +82,7 @@ function Log()
     return (
         <div className="mainContainer">
             <h1>Login</h1>
-            {error && <div className="errorLabel">{error}</div>}
+            {error && <div className="errorLabel" style={{color: 'red'}}>{error}</div>}
             <form onSubmit={handleSubmit}>
                 <div className={'inputContainer'}>
                     <label>Username: </label>
@@ -91,6 +105,8 @@ function Log()
                 </div>
                 <div>
                     <Link to="/register">Not a user? Register here.</Link>
+                    <br></br>
+                    <Link to="/forgot-password">Forgot password? </Link>
                 </div>
             </form>
 

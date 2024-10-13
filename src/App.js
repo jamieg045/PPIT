@@ -18,10 +18,15 @@ import Grocery from './mycomponents/grocery';
 import { LocationContext, LocationProvider } from './mycomponents/locationcontext';
 import { Link } from 'react-router-dom';
 import Success from './mycomponents/success';
+import ForgotPassword from './mycomponents/forgotpassword';
+import ResetPassword from './mycomponents/resetpassword';
+import axios from 'axios';
 
 function App() {
   const user = JSON.parse(sessionStorage.getItem('user'));
+  console.log('Logged in user:', user);
   const [cartCount, setCartCount] = useState(0);
+  const [locationClassification, setLocationClassification] = useState(null);
 
   useEffect(() => {
     // Load cart from sessionStorage and calculate item count
@@ -36,6 +41,22 @@ function App() {
     window.location.replace('/');
   };
 
+  const fetchLocationClassification = (eircode) => {
+    axios.get(`http://192.168.1.1:4000/api/data/${eircode}`)
+    .then((response) => {
+      setLocationClassification(response.data.LocationClassification);
+    })
+    .catch((error) => {
+      console.log('Error fetching location classification', error);
+    })
+  }
+
+  useEffect(() => {
+    if (user?.eircode) {
+      fetchLocationClassification(user.eircode); // Fetch classification based on user eircode
+    }
+  }, [user?.eircode]);
+
   return (
     <LocationProvider>
       <Router>
@@ -44,38 +65,61 @@ function App() {
             <Container>
               <Navbar.Brand>IHPOS</Navbar.Brand>
               {user ? (
-                <LocationContext.Consumer>
-                  {({ selectedLocation }) => (
-                    selectedLocation ? (
-                      <>
+                <>
+                  {user.role === 'admin' || user.role === 'customer' ? (
+                    <LocationContext.Consumer>
+                      {({ selectedLocation }) => (
+                        selectedLocation ? (
+                          <>
+                            <Nav className="me-auto">
+                              {locationClassification !== 'Grocery' || 'Pub' && (
+                                <Nav.Link as={Link} to={`/menu/${selectedLocation.Eircode}`}>Food</Nav.Link>
+                              )}
+                              <Nav.Link as={Link} to={`/drinks/${selectedLocation.Eircode}`}>Drinks</Nav.Link>
+                            </Nav>
+                            <Nav>
+                              <Link to="/cart" className="nav-link">
+                                Cart ({cartCount})
+                              </Link>
+                            </Nav>
+                          </>
+                        ) : (
+                          <p>Select a location...</p>
+                        )
+                      )}
+                    </LocationContext.Consumer>
+                  ) : (
+                    // This block for employees, supervisors, and managers
+                    <>
                       <Nav className="me-auto">
-                        <Nav.Link as={Link} to={`/menu/${selectedLocation.Eircode}`}>Food</Nav.Link>
-                        <Nav.Link as={Link} to={`/drinks/${selectedLocation.Eircode}`}>Drinks</Nav.Link>
+                        <Nav.Link as={Link} to={`/menu/${user.eircode}`}>Food</Nav.Link>
+                        <Nav.Link as={Link} to={`/drinks/${user.eircode}`}>Drinks</Nav.Link>
                         {user.role === 'manager' && (
                           <>
-                            <Nav.Link as={Link} to={`/add/${selectedLocation.Eircode}`}>Add New Food Product</Nav.Link>
-                            <Nav.Link as={Link} to={`/addbeverage/${selectedLocation.Eircode}`}>Add New Beverage</Nav.Link>
+                            <Nav.Link as={Link} to="/add">Add New Food Product</Nav.Link>
+                            <Nav.Link as={Link} to={`/addbeverage/${user.eircode}`}>Add New Beverage</Nav.Link>
                           </>
                         )}
-                        <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
-                        </Nav>
+                      </Nav>
                       <Nav>
-                      <Link to="/cart" className="nav-link">
-                        Cart ({cartCount})
-                      </Link>
-                    </Nav>
+                        <Link to="/cart" className="nav-link">
+                          Cart ({cartCount})
+                        </Link>
+                      </Nav>
                     </>
-                    ) : null
                   )}
-                </LocationContext.Consumer>
+                  <Nav>
+                    <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                  </Nav>
+                </>
               ) : null}
             </Container>
           </Navbar>
           <Routes>
             <Route path="/" element={<Log />} exact />
             <Route path="/register" element={<Login />} />
-            <Route path="/add/:eircode" element={<AddProduct setCartCount={setCartCount}/>} exact />
-            <Route path="/addbeverage/:eircode" element={<AddBeverage setCartCount={setCartCount}/>} />
+            <Route path="/add/:eircode" element={<AddProduct setCartCount={setCartCount} />} exact />
+            <Route path="/addbeverage/:eircode" element={<AddBeverage setCartCount={setCartCount} />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/fail" element={<Fail />} />
             <Route path="/map" element={<MapComponent />} />
@@ -83,6 +127,8 @@ function App() {
             <Route path="/drinks/:eircode" element={<Beverage setCartCount={setCartCount} />} />
             <Route path="/success" element={<Success />} />
             <Route path="/fail" element={<Fail />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password/:token" element={<ResetPassword></ResetPassword>} />
           </Routes>
         </div>
       </Router>

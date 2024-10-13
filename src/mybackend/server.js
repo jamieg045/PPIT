@@ -1,12 +1,21 @@
 const express = require('express');
 const mysql = require('mysql');
-
+const nodemailer = require('nodemailer');
 const app = express();
 const port = 4000;
 const cors = require('cors');
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const stripe = require('stripe')('sk_test_51P3McW09IVIuY12X6aQ5hwfQgvKtxJhokWWLgVh5tgNhAvMFc09wfhDcXR4KT4QT3sUvAfH9evsbSsIFpeIBIzlW00R1VztgvB');
+const crypto = require('crypto');
+
+const transporter = nodemailer.createTransport({
+    service: 'yahoo',
+    auth: {
+        user: 'jamiegallagher73@yahoo.com',
+        pass: ''
+    }
+});
 
 //Making connection to MySQL
 const connection = mysql.createConnection({
@@ -98,6 +107,25 @@ app.get('/api/data', (req, res) => {
         res.json(results);
     });
 });
+
+app.get('/api/data/:eircode', (req,res) => {
+    const {eircode} = req.params;
+
+    const query = 'SELECT LocationClassification FROM locations WHERE eircode = ?';
+    connection.query(query, [eircode], (error, results) => {
+        if(error) {
+            console.error('Database error', error);
+            return res.status(500).json({success: false, message: 'Internal server error'})
+        }
+
+        if(results.length > 0)
+        {
+            res.json(results[0]);
+        } else {
+            res.status(404).json({success:false, message: 'Location not found'})
+        }
+    })
+})
 
 // Locates all the items on the food menu
 app.get('/api/menu', (req, res) => {
@@ -453,9 +481,9 @@ app.post('/api/drinks', (req, res) => {
 // Creates a new user and determines whether it has already registered with the app
 app.post('/api/users', (req, res) => {
     //console.log(req.body);
-    const { username, password, role } = req.body;
+    const { username, email, password, role } = req.body;
 
-    connection.query('SELECT * FROM users WHERE username = ?', [username], (err, results) => {
+    connection.query('SELECT * FROM users WHERE username = ? OR email = ?', [username, email], (err, results) => {
         if (err) {
             console.log('Error checking username:', err);
             return res.status(500).json({ error: 'Internal server error' });
@@ -463,31 +491,52 @@ app.post('/api/users', (req, res) => {
 
         if (results.length > 0) {
             console.log("Username already exists");
-            return res.status(409).json({ error: 'Username is already taken' });
+            return res.status(409).json({ error: 'Username or email is already taken' });
         }
         else {
             bcrypt.hash(password, 10, (err, hash) => {
                 if (err) {
-                    console.log('Error hashing password:', err);
+                    return res.status(500).json({ success: false, message: 'Password encryption error' });
                 } else {
                     console.log('Hashed password:',)
                 }
 
-                const query = 'insert into users (username, password, role) VALUES (?, ? ,?);'
-                connection.query(query, [username, hash, role], (error, results) => {
+                const query = 'insert into users (username, password, role, email) VALUES (?, ? ,?,?);'
+                connection.query(query, [username, hash, role, email], (error, results) => {
                     if (error) {
                         console.log('Error:', error);
                         res.status(500).json({ message: 'An error occured while saving data' });
                     }
-                    else {
-                        console.log('Data saved successfully');
-                        res.status(200).json({ message: 'Data saved successfully' });
-                    }
+                    const mailOptions = {
+                        from: 'jamiegallagher73@yahoo.com',
+                        to: email,
+                        subject: 'Account Confirmation',
+                        text: `Thank you for registering! Please confirm your account by clicking the link: http://192.168.1.1:4000/confirm?user=${username}`
+                    };
+
+                    transporter.sendMail(mailOptions, (err, info) => {
+                        if (err) {
+                            console.log('Error sending email', err);
+                            return res.status(500).json({ success: false, message: 'Error sending email' })
+                        }
+
+                        res.status(200).json({ success: true, message: 'Registration successful! Confirmation email sent.' })
+                    })
                 })
             })
         }
     })
 });
+
+app.get('/confirm', (req, res) => {
+    const username = req.query.user;
+
+    connection.query('UPDATE users SET confirmed = 1 WHERE username = ?', [username], (err, result) => {
+        if (err) return res.status(500).json({ success: false, message: 'Error confirming user' });
+
+        res.status(200).send('Account confirmed successfully!');
+    })
+})
 
 // Allows the user to login to the application if they meet the required password and username 
 app.post('/api/login', (req, res) => {
@@ -506,6 +555,10 @@ app.post('/api/login', (req, res) => {
 
             const user = results[0];
             //const userPassword = user.password.toString('utf-8');
+
+            if (user.confirmed !== 1) {
+                return res.status(403).json({ success: false, message: 'Account not confirmed. Please check your email to confirm your account' })
+            }
             const storedHashedPassword = user.password;
 
             bcrypt.compare(password, storedHashedPassword, (err, result) => {
@@ -522,6 +575,78 @@ app.post('/api/login', (req, res) => {
                 return res.status(200).json({ success: true, message: 'Login successful', username: user.username, role: user.role, eircode: user.eircode || null });
             })
         })
+})
+
+app.post('/api/forgot-password', (req, res) => {
+    const { email } = req.body;
+
+    connection.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
+        if (err || results.length === 0) {
+            return res.status(404).json({ message: 'Email not found' })
+        }
+
+        const user = results[0];
+        const token = crypto.randomBytes(32).toString('hex');
+        const resetTokenExpiry = Date.now() + 3600000;
+
+        // Log expiry time to check if it's being calculated correctly
+         console.log("Reset token expiry: ", resetTokenExpiry);
+         console.log("The date:" + Date.now());
+
+        connection.query('UPDATE users SET reset_password_token = ?, reset_password_expires = ? WHERE email = ?',
+            [token, resetTokenExpiry, email], (error) => {
+                if (error) {
+                    return res.status(500).json({ message: 'Error saving reset token' })
+                }
+
+                const mailOptions = {
+                    from: 'jamiegallagher73@yahoo.com',
+                    to: user.email,
+                    subject: 'Password Reset',
+                    text: `You are receiving this email because you (or someone else) have requested a password reset for your account.
+                Please click the following link to reset your password: http://192.168.1.1:3000/reset-password/${token}
+                If you did not request this, please ignore this email.`,
+                };
+
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        return res.status(500).json({ message: 'Error sending email' });
+                    }
+                    res.status(200).json({ message: 'Password reset email sent successfully' })
+                });
+            });
+    });
+});
+
+app.post('/api/reset-password/:token', (req, res) => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    connection.query('SELECT * FROM users WHERE reset_password_token = ? AND reset_password_expires > ?',
+        [token, Date.now()], (err, results) => {
+            if (err || results.length === 0) {
+                return res.status(400).json({ message: 'Password reset token is invalud or has expired' });
+            }
+
+            const user = results[0];
+
+            bcrypt.hash(password, 10, (err, hashedPassword) => {
+                if (err) {
+                    return res.status(500).json({ message: 'Error hashing password' });
+                }
+
+                connection.query('UPDATE users SET password = ?, reset_password_token = NULL, reset_password_expires = NULL WHERE id = ?',
+                    [hashedPassword, user.id], (error) => {
+                        if (error) {
+                            return res.status(500).json({ message: 'Error updating password;' });
+
+                        }
+                        res.status(200).json({ message: 'Password updated successfully' });
+                    }
+                )
+            })
+        }
+    )
 })
 
 // Sends the items in the cart the user has selected to a Stripe checkout

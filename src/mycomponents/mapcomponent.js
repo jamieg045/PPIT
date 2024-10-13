@@ -10,9 +10,9 @@ import { LocationContext } from './locationcontext';
 function MapComponent()
 {
     const [locations, setLocations] = useState([]);
-    const [userLocation, setUserLocation] = useState(null);
+    const [userLocationState, setUserLocationState] = useState(null);
     const navigate = useNavigate();
-    const {setSelectedLocation} = useContext(LocationContext);
+    const {setSelectedLocation, setUserLocation} = useContext(LocationContext);
 
     useEffect(() => {
         axios.get('http://192.168.1.1:4000/api/data')
@@ -25,20 +25,23 @@ function MapComponent()
         });
 
         navigator.geolocation.getCurrentPosition(position => {
-            setUserLocation([position.coords.latitude, position.coords.longitude]);
+            const userCoords = [position.coords.latitude, position.coords.longitude];
+            setUserLocationState(userCoords);
+            setUserLocation(userCoords);
+            console.log("Coordinates fetched successfully" + position.coords.latitude, position.coords.longitude)
         }, error => {
             console.error('Error getting user location', error);
         });
-    }, []);
+    }, [setUserLocation]);
 
     const handleLocationClick = (location) => {
         console.log('Clicked eircode:', location.Eircode);
         setSelectedLocation(location);
-            navigate(`/menu/${location.Eircode}`);
+            navigate(`/drinks/${location.Eircode}`);
     };
 
     return (
-        <MapContainer center={userLocation || [53.725109, -8.990249]} zoom={20} style={{ height: "100vh", width: "100%"}}>
+        <MapContainer center={userLocationState || [53.7523451, -9.0293420]} zoom={20} style={{ height: "100vh", width: "100%"}}>
             <TileLayer
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
@@ -67,8 +70,8 @@ function MapComponent()
             </Marker>
             );
         })}
-            {userLocation && (
-                <Marker position={userLocation}>
+            {userLocationState && (
+                <Marker position={userLocationState}>
                     <Popup>Your Location</Popup>
                 </Marker>
             )}
