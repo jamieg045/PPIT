@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Products from './products';
 import axios from 'axios';
 import Cart from './cart';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from 'bootstrap';
 
 function Home({ setCartCount }) {
@@ -11,6 +11,11 @@ function Home({ setCartCount }) {
   const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
   const [availableCategories, setAvailableCategories] = useState([]);
   const { eircode } = useParams();
+  const [locationName, setLocationName] = useState('');
+  const [addToCartAnimation, setAddToCartAnimation] = useState(false);
+  const [hasFoodItems, setHasFoodItems] = useState(null);
+  const navigate = useNavigate();
+  const isTakeaway = sessionStorage.getItem('Takeaway') === 'True';
 
   const fetchCategoryProducts = (category) => {
     if (eircode) {
@@ -30,6 +35,21 @@ function Home({ setCartCount }) {
   };
 
   useEffect(() => {
+    axios.get(`http://192.168.1.1:4000/api/menu/check-food/${eircode}`)
+    .then(response => {
+      setHasFoodItems(response.data.hasFoodItems);
+      if(!response.data.hasFoodItems)
+      {
+        navigate(`/drinks/${eircode}`);
+      }
+    })
+    .catch(err => {
+      console.error('Error checking food menu:', err);
+      setHasFoodItems(false);
+    });
+  }, [eircode, navigate]);
+
+  useEffect(() => {
     if (eircode) {
       console.log(`Fetching menu for eircode: ${eircode}`);
       axios
@@ -45,8 +65,22 @@ function Home({ setCartCount }) {
   }, [eircode]);
 
   useEffect(() => {
+    if (eircode) {
+      // Fetch location name based on eircode
+      axios
+        .get(`http://192.168.1.1:4000/api/data/${eircode}`)
+        .then((response) => {
+          setLocationName(response.data.LocationName);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [eircode]);
+
+  useEffect(() => {
     if(eircode) {
-      axios.get(`http://192.168.1.1:4000/api/menu/$eircode`)
+      axios.get(`http://192.168.1.1:4000/api/menu/${eircode}`)
       .then((response) => {
         const fetchedProducts = response.data;
         setProducts(fetchedProducts);
@@ -85,13 +119,34 @@ function Home({ setCartCount }) {
       }
     }
     updateCartCount();
+
+    if(navigator.vibrate)
+    {
+      navigator.vibrate(200);
+    }
+
+    setAddToCartAnimation(true);
+    setTimeout(() => setAddToCartAnimation(false), 500);
   };
 
   const categories = ['Starter', 'Main Course', 'Dessert', 'Sides', 'Pizza', 'Sandwich'];
+  if(hasFoodItems === null)
+    {
+      return <p>Loading menu...</p>
+    }
 
+    if(isTakeaway)
+    {
+      console.log('Takeaway order in progress');
+    } else
+    {
+      console.log('Dine-in or other order types');
+    }
   return (
+    hasFoodItems && (
     <div>
       <div className="home-container">
+        <h1>Welcome to {locationName}</h1>
         <h2>Food Menu</h2>
         <div className="category-buttons">
           {availableCategories.map((category) => (
@@ -105,13 +160,13 @@ function Home({ setCartCount }) {
           ))}
         </div>
         {selectedCategory ? (
-        <Products myProducts={products} addToCart={addToCart} />
+        <Products myProducts={products} addToCart={(productId) => { addToCart(productId); }} addToCartAnimation={addToCartAnimation} />
       ) : (
         <p>Please select a category to view items.</p>
       )}
       </div>
     </div>
-  );
+  ));
 }
 
 export default Home;

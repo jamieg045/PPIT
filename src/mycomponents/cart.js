@@ -2,31 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import axios from 'axios';
 
-function Cart() {
+function Cart({setCartCount}) {
   const [cart, setCart] = useState([]);
   const [user, setUser] = useState(null);
+  const isTakeaway = sessionStorage.getItem('Takeaway') === 'True';
 
   useEffect(() => {
     // Load cart from sessionStorage when the component mounts
     const storedCart = JSON.parse(sessionStorage.getItem('cart')) || [];
     const storedusername = JSON.parse(sessionStorage.getItem('user')) || { username: 'Unknown' };
-  
-
+    
     setCart(storedCart);
     setUser(storedusername);
+    updateCartCount(storedCart);
   }, []);
 
-  const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+  const updateCartCount = (cart) => {
+    const itemCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+    setCartCount(itemCount);
+  }
 
   const handleCheckout = async () => {
     try {
 
       const eircode = cart.length > 0 ? cart[0].eircode : 'Unknown';
       const stripe = await loadStripe('pk_test_51P3McW09IVIuY12XuwY2OjzI7EBnj5CuUxyfU2EL1cwXLUOsok2SbmjGCrOZUHaccj18JKsPmRaBgaRZnqV6jGCf00RRGNTWX7');
-      const response = await axios.post('http://192.168.1.1:4000/api/create-checkout-session', { products: cart, username: user.username, eircode: eircode});
+      const response = await axios.post('http://192.168.1.1:4000/api/create-checkout-session', { products: cart, username: user.username, eircode: eircode, is_takeaway: isTakeaway});
       const session = response.data;
       await stripe.redirectToCheckout({ sessionId: session.id });
+      setCart([]);
       sessionStorage.removeItem('cart');
+      updateCartCount([]);
     } catch (error) {
       console.error('Error initiating checkout:', error);
     }
@@ -38,6 +44,7 @@ function Cart() {
     );
     setCart(updatedCart);
     sessionStorage.setItem('cart', JSON.stringify(updatedCart)); // Save updated cart
+    updateCartCount(updatedCart);
   };
 
   const decreaseQuantity = (productId) => {
@@ -46,13 +53,17 @@ function Cart() {
     );
     setCart(updatedCart);
     sessionStorage.setItem('cart', JSON.stringify(updatedCart)); // Save updated cart
+    updateCartCount(updatedCart);
   };
 
   const removeFromCart = (productId) => {
     const updatedCart = cart.filter(item => item.product_id !== productId);
     setCart(updatedCart);
     sessionStorage.setItem('cart', JSON.stringify(updatedCart)); // Save updated cart
+    updateCartCount(updatedCart);
   };
+
+  const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
 
   return (
     <div>
@@ -70,8 +81,14 @@ function Cart() {
             </div>
           ))}
           <p>Total Price: €{totalPrice.toFixed(2)}</p>
-          <button onClick={handleCheckout} className="btn btn-primary">
-            Checkout
+          <button 
+          onClick={() => {
+            handleCheckout()
+          }
+        }
+        className="btn btn-primary"
+        >
+            Proceed to Checkout
           </button>
         </div>
       ) : (

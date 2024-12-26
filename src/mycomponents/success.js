@@ -8,10 +8,11 @@ function Success() {
     // Clear the cart in sessionStorage after payment success
     sessionStorage.removeItem('cart');
     sessionStorage.removeItem('user'); // This will log the user out
+    sessionStorage.setItem('Takeaway', 'False');
 
     // Optionally, redirect the user back to another page
     setTimeout(() => {
-      navigate('/');
+      window.location.replace('/');
     }, 3000); // Redirect after 3 seconds
   }, [navigate]);
 

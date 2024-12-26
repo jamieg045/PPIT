@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom";
 
-function AddProduct({onProductAdded})
+function EditProduct({props, onProductAdded})
 {
+    let {product_id} = useParams();
     const navigate = useNavigate();
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
@@ -29,6 +30,18 @@ function AddProduct({onProductAdded})
         .catch((error) => {
             console.error('Error fetching categories:', error);
         });
+
+        axios.get(`http://192.168.1.1:4000/api/menu/${product_id}`)
+        .then((response) => {
+            setName(response.data.name);
+            setPrice(response.data.price);
+            setDescription(response.data.description);
+            setLocationName(response.data.locationName);
+            setCategory(response.data.category);
+        })
+        .catch(function (error) {
+            console.log(error);
+        })
     }, [eircode]);
 
     const handleSubmit = (e) => {
@@ -38,6 +51,7 @@ function AddProduct({onProductAdded})
 
         const product =
         {
+            product_id: product_id,
             name:name,
             price:price,
             description:description,
@@ -45,7 +59,7 @@ function AddProduct({onProductAdded})
             category:category
         }
 
-        axios.post('http://localhost:4000/api/menu', product)
+        axios.put(`http://192.168.1.1:4000/api/menu/${product_id}`, product)
         .then((res) => { 
             onProductAdded();
             navigate(`/manager-mode`);
@@ -56,7 +70,7 @@ function AddProduct({onProductAdded})
 
     return (
         <div>
-            <h1>Insert Food Product</h1>
+            <h1>Update Food Product</h1>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>Product Name: </label>
@@ -106,11 +120,11 @@ function AddProduct({onProductAdded})
                         ))}
                     </select>
                 </div>
-                <input type="submit" value="Add Product"></input>
+                <input type="submit" value="Update Product"></input>
             </form>
 
         </div>
     )
 }
 
-export default AddProduct;
+export default EditProduct;

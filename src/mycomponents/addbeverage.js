@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from 'axios';
 import { useNavigate , useParams} from "react-router-dom";
+import { useEffect } from "react";
 
 function AddBeverage() {
     const navigate = useNavigate();
@@ -9,9 +10,27 @@ function AddBeverage() {
     const [description, setDescription] = useState('');
     const {eircode}= useParams();
     const [category, setCategory] = useState('');
+    const [locationName, setLocationName] = useState('');
+    const [categories, setCategories] = useState([]);
 
-    // Example of ENUM values for product categories
-    const categories = ['Stout', 'Lager', 'Red Ale', 'Cider', 'IPA', 'Beer Bottle', 'Liquer', 'Split', 'Baby', 'Dashes', 'Cocktail'];
+
+    useEffect(() => {
+        axios.get(`http://192.168.1.1:4000/api/data/${eircode}`)
+        .then((response) => {
+            setLocationName(response.data.LocationName);
+        })
+        .catch((error) => {
+            console.error('Error fetching location Name:', error);
+        });
+
+        axios.get(`http://192.168.1.1:4000/api/drinkcategories`)
+        .then((response) => {
+            setCategories(response.data);
+        })
+        .catch((error) => {
+            console.error('Error fetching categories:', error);
+        });
+    }, [eircode]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -30,7 +49,7 @@ function AddBeverage() {
         axios.post('http://localhost:4000/api/drinks', product)
             .then((res) => console.log(res.data))
             .catch((err) => console.log(err.data));
-        navigate(`/drinks/${eircode}`)
+            navigate(`/manager-mode`);
 
     }
 
@@ -44,6 +63,7 @@ function AddBeverage() {
                         className="form-control"
                         value={name}
                         onChange={(e) => { setName(e.target.value) }}
+                        required
                     />
                 </div>
                 <div className="form-group">
@@ -52,6 +72,7 @@ function AddBeverage() {
                         className="form-control"
                         value={price}
                         onChange={(e) => { setPrice(e.target.value) }}
+                        required
                     />
                 </div>
                 <div className="form-group">
@@ -63,10 +84,10 @@ function AddBeverage() {
                     />
                 </div>
                 <div className="form-group">
-                    <label>Location Eircode: </label>
+                    <label>Location Name: </label>
                     <input type="text"
                         className="form-control"
-                        value={eircode}
+                        value={locationName}
                         disabled
                     />
                 </div>

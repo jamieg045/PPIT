@@ -17,12 +17,15 @@ function Log()
         {
             const { role, eircode } = isLoggedin;
 
-            if (role === 'customer' || role === 'admin') {
+            if (role === 'Customer' || role === 'Admin') {
                 console.log("User is logged in:", isLoggedin.username);
                 navigate('/map');
-            } else if (role === 'employee' || role === 'supervisor' || role === 'manager') {
+            } else if (role === 'Employee' || role === 'Supervisor') {
                 console.log("User is logged in:", isLoggedin.username);
-                navigate(`/drinks/${eircode}`);
+                navigate(`/menu/${eircode}`);
+            } else if (role === 'Manager')
+            {
+                navigate('/manager-options');
             }
         } else {
             console.log("User is not logged in");
@@ -49,12 +52,16 @@ function Log()
 
             // Redirect based on role
             const { role, eircode } = res.data;
-            if (role === 'customer' || role === 'admin') {
+            if (role === 'Customer' || role === 'Admin') {
                 window.location.reload();
                 navigate('/map');
-            } else if (role === 'employee' || role === 'supervisor' || role === 'manager') {
+            } else if (role === 'Employee' || role === 'Supervisor') {
                 window.location.reload();
                 navigate(`/menu/${eircode}`);
+            } else if (role === 'Manager')
+            {
+                window.location.reload();
+                navigate('/manager-options');
             }
         } else {
             setError(res.data.message);

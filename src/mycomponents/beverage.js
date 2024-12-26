@@ -12,6 +12,8 @@ function Beverage({ setCartCount }) {
   const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
   const [availableCategories, setAvailableCategories] = useState([]);
   const {eircode} = useParams();
+  const [locationName, setLocationName] = useState('');
+  const [addToCartAnimation, setAddToCartAnimation] = useState(false);
 
   const fetchCategoryBeverages = (category) => {
     if (eircode) {
@@ -38,6 +40,20 @@ function Beverage({ setCartCount }) {
         .then((response) => {
           console.log('API response:', response.data);
           setBeverages(response.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
+  }, [eircode]);
+
+  useEffect(() => {
+    if (eircode) {
+      // Fetch location name based on eircode
+      axios
+        .get(`http://192.168.1.1:4000/api/data/${eircode}`)
+        .then((response) => {
+          setLocationName(response.data.LocationName);
         })
         .catch((error) => {
           console.log(error);
@@ -85,12 +101,21 @@ function Beverage({ setCartCount }) {
       }
     }
     updateCartCount();
+
+    if(navigator.vibrate)
+    {
+      navigator.vibrate(200);
+    }
+
+    setAddToCartAnimation(true);
+    setTimeout(() => setAddToCartAnimation(false), 500);
   };
   const categories = ['Stout', 'Lager', 'Red Ale','Cider', 'IPA', 'Beer Bottle', 'Liquer', 'Split', 'Baby', 'Dashes','Cocktail'];
 
   return (
     <div>
       <div className="home-container">
+      <h1>Welcome to {locationName}</h1>
         <h2>Drinks Menu</h2>
         <div className="category-buttons">
           {availableCategories.map((category) => (
@@ -104,7 +129,7 @@ function Beverage({ setCartCount }) {
           ))}
         </div>
         {selectedCategory ? (
-        <BeverageProducts myBeverages={beverages} addToCart={addToCart} />
+        <BeverageProducts myBeverages={beverages} addToCart={(productId) => { addToCart(productId); }} addToCartAnimation={addToCartAnimation} />
       ) : (
         <p>Please select a category to view items.</p>
       )}

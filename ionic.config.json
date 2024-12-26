@@ -1,5 +1,8 @@
 {
   "name": "professional-practice",
   "integrations": {},
-  "type": "react"
+  "type": "react",
+  "server": {
+    "port": 3000
+  }
 }
